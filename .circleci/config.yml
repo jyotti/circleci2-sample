@@ -4,6 +4,11 @@ references:
     docker:
       - image: openjdk:8
 
+  container_python: &container_python
+    working_directory: ~/circleci2-sample
+    docker:
+      - image: python:3.6.1
+
   workspace_root: &workspace_root
       /tmp/workspace
 
@@ -48,7 +53,7 @@ jobs:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle" }}
       - run:
-          name: gradle package
+          name: save artifact
           command: |
             ./gradlew bootRepackage
       - run:
@@ -61,7 +66,7 @@ jobs:
           paths:
             - circleci2-sample
   deploy:
-    <<: *container_java
+    <<: *container_python
     steps:
       - checkout
       - *attach_workspace
@@ -69,6 +74,24 @@ jobs:
           name: show artifact
           command: |
             ls -la /tmp/workspace/circleci2-sample/
+      - restore_cache:
+         keys:
+           - pip-{{ checksum ".circleci/requirements.txt" }}
+      - run:
+         name: setup python
+         command: |
+           python3 -m venv venv
+           . venv/bin/activate
+           pip install -r .circleci/requirements.txt
+           aws --version
+      - save_cache:
+         key: pip-{{ checksum ".circleci/requirements.txt" }}
+         paths:
+          - "venv"
+      - run:
+          name: deploy
+          command: |
+            echo "(´∀｀)"
 
 workflows:
   version: 2
