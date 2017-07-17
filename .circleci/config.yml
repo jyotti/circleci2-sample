@@ -1,7 +1,6 @@
 references:
   container_java: &container_java
-    # working_directory: ~/circleci2-sample
-    working_directory: /Users/jyotti/git/circleci2-sample
+    working_directory: ~/circleci2-sample
     docker:
       - image: openjdk:8
 
