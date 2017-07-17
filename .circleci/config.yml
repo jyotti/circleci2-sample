@@ -84,7 +84,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            echo "(´∀｀)"
+            echo "Launch CodeDeploy..."
 
 workflows:
   version: 2
