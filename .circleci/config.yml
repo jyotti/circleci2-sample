@@ -20,34 +20,6 @@ references:
 
 version: 2
 jobs:
-  # checkout_code:
-  #   <<: *container_java
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: create workspace
-  #         command: |
-  #           mkdir -p /tmp/workspace/circleci2-sample
-  #           mv * .[!.]* /tmp/workspace/circleci2-sample/
-  #     - persist_to_workspace:
-  #         root: *workspace_root
-  #         paths:
-  #           - circleci2-sample
-  # build:
-  #   <<: *container_java
-  #   steps:
-  #     - *attach_workspace
-  #     - *load_code
-  #     - restore_cache:
-  #         key: gradle-{{ checksum "build.gradle" }}
-  #     - run:
-  #         name: gradle build
-  #         command: |
-  #           ./gradlew build
-  #     - save_cache:
-  #         paths:
-  #           - ~/.gradle
-  #         key: gradle-{{ checksum "build.gradle" }}
   checkout_code:
     <<: *container_java
     steps:
@@ -102,7 +74,6 @@ workflows:
   version: 2
   build:
     jobs:
-      # - checkout_code
       - build:
       - deploy:
           requires:
