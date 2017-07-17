@@ -19,11 +19,6 @@ references:
           mv /tmp/workspace/ninary/* /tmp/workspace/ninary/.[!.]* .
 
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   checkout:
     <<: *container_java
