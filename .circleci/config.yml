@@ -20,6 +20,34 @@ references:
 
 version: 2
 jobs:
+  # checkout_code:
+  #   <<: *container_java
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: create workspace
+  #         command: |
+  #           mkdir -p /tmp/workspace/circleci2-sample
+  #           mv * .[!.]* /tmp/workspace/circleci2-sample/
+  #     - persist_to_workspace:
+  #         root: *workspace_root
+  #         paths:
+  #           - circleci2-sample
+  # build:
+  #   <<: *container_java
+  #   steps:
+  #     - *attach_workspace
+  #     - *load_code
+  #     - restore_cache:
+  #         key: gradle-{{ checksum "build.gradle" }}
+  #     - run:
+  #         name: gradle build
+  #         command: |
+  #           ./gradlew build
+  #     - save_cache:
+  #         paths:
+  #           - ~/.gradle
+  #         key: gradle-{{ checksum "build.gradle" }}
   checkout_code:
     <<: *container_java
     steps:
@@ -36,8 +64,7 @@ jobs:
   build:
     <<: *container_java
     steps:
-      - *attach_workspace
-      - *load_code
+      - checkout
       - restore_cache:
           key: gradle-{{ checksum "build.gradle" }}
       - run:
@@ -48,12 +75,35 @@ jobs:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: gradle package
+          command: |
+            ./gradlew bootRepackage
+      - run:
+          name: create workspace
+          command: |
+            mkdir -p /tmp/workspace/circleci2-sample
+            cp build/libs/circleci2-sample-0.0.1-SNAPSHOT.jar /tmp/workspace/circleci2-sample/
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - circleci2-sample
+  deploy:
+    <<: *container_java
+    steps:
+      - checkout
+      - *attach_workspace
+      - run:
+          name: show artifact
+          command: |
+            ls -la /tmp/workspace/circleci2-sample/
 
 workflows:
   version: 2
   build:
     jobs:
-      - checkout_code
+      # - checkout_code
       - build:
+      - deploy:
           requires:
-            - checkout_code
+            - build
