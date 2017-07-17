@@ -16,13 +16,6 @@ references:
     attach_workspace:
       at: *workspace_root
 
-  load_code: &load_code
-    run:
-      name: load code from workspace
-      command: |
-          # Move all files and dotfiles to current directory
-          mv /tmp/workspace/circleci2-sample/* /tmp/workspace/circleci2-sample/.[!.]* .
-
 version: 2
 jobs:
   checkout_code:
