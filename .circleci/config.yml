@@ -20,7 +20,7 @@ references:
 
 version: 2
 jobs:
-  checkout:
+  checkout_code:
     <<: *container_java
     steps:
       - checkout
@@ -33,8 +33,20 @@ jobs:
           root: *workspace_root
           paths:
             - circleci2-sample
+  build:
+    <<: *container_java
+    steps:
+      - *attach_workspace
+      - *load_code
+      - run:
+          name: gradle build
+          command: |
+            ./gradlew build
 workflows:
   version: 2
   build:
     jobs:
-      - checkout
+      - checkout_code
+      - build:
+          requires:
+            - checkout_code
