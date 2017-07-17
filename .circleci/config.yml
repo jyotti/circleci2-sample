@@ -38,10 +38,17 @@ jobs:
     steps:
       - *attach_workspace
       - *load_code
+      - restore_cache:
+          key: gradle-{{ checksum "build.gradle" }}
       - run:
           name: gradle build
           command: |
             ./gradlew build
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}
+
 workflows:
   version: 2
   build:
