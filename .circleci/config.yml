@@ -1,0 +1,42 @@
+references:
+  container_java: &container_java
+    # working_directory: ~/circleci2-sample
+    working_directory: /Users/jyotti/git/circleci2-sample
+    docker:
+      - image: openjdk:8
+
+  workspace_root: &workspace_root
+      /tmp/workspace
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+  load_code: &load_code
+    run:
+      name: load code from workspace
+      command: |
+          # Move all files and dotfiles to current directory
+          mv /tmp/workspace/ninary/* /tmp/workspace/ninary/.[!.]* .
+
+version: 2
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+jobs:
+  checkout:
+    <<: *container_java
+    steps:
+      - checkout
+      - run:
+          name: create workspace
+          command: |
+            mkdir -p /tmp/workspace/circleci2-sample
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - checkout
